@@ -1,62 +1,94 @@
 import streamlit as st
-from pytrends.request import TrendReq
-import time
+import pandas as pd
+from datetime import datetime
 
 st.set_page_config(page_title="Redbubble Pro Hunter", layout="wide", page_icon="🔥")
 
 st.title("🔥 Redbubble Pro Hunter")
-st.markdown("**Rising Demand + Low Competition Niche Finder**")
+st.markdown("**Rising Demand + Low Competition Research Tool**")
+st.caption("Best free accessible data sources for organic Redbubble success")
 
-keyword = st.text_input("Enter your main keyword or niche", 
+# ====================== USEFUL FREE TREND SOURCES ======================
+st.subheader("🔗 Best Free Redbubble Trend Sources (2026)")
+
+col1, col2 = st.columns(2)
+with col1:
+    st.markdown("""
+    **1. Bubble Trends**  
+    [→ Open BubbleTrends](https://www.thebubbletrends.com/)
+    
+    **2. BubbleSpider**  
+    [→ Popular Keywords](https://bubblespider.com/keyword-research/popular-keywords)
+    """)
+
+with col2:
+    st.markdown("""
+    **3. Top Bubble Index**  
+    [→ Check Index](https://www.topbubbleindex.com/)
+    
+    **4. Insight Factory**  
+    [→ Daily Trends](https://insightfactory.app/redbubble-trends/)
+    """)
+
+st.divider()
+
+# ====================== MAIN KEYWORD ANALYSIS ======================
+keyword = st.text_input("Enter your keyword or niche", 
                        placeholder="e.g. pickleball grandma, anxiety cat, booktok girl")
 
 if st.button("🚀 Analyze This Niche", type="primary", use_container_width=True):
     if keyword:
-        with st.spinner("Connecting to Google Trends..."):
-            try:
-                # More stable connection
-                pytrends = TrendReq(hl='en-US', tz=360, retries=3, backoff_factor=0.5)
-                
-                pytrends.build_payload([keyword], cat=0, timeframe='today 12-m')
-                interest = pytrends.interest_over_time()
-                
-                if interest.empty:
-                    st.warning("No trend data found for this keyword. Try a more popular term.")
-                else:
-                    avg_score = int(interest[keyword].mean())
-                    is_rising = interest[keyword].iloc[-3:].mean() > interest[keyword].iloc[:3].mean()
+        st.success(f"**Analyzing: {keyword}**")
 
-                    st.success("✅ Successfully fetched trend data!")
+        st.subheader("Step 1: Check Current Competition")
+        st.markdown(f"[🔗 Open Redbubble Search](https://www.redbubble.com/shop/{keyword.replace(' ', '+')})")
+        
+        results = st.number_input("Paste number of results from Redbubble", 
+                                min_value=0, value=8000, step=500, help="Look for 'X results' or 'of X designs'")
 
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.metric("Demand Score", f"{avg_score}/100", "Rising 🔥" if is_rising else "Stable")
-                    with col2:
-                        st.metric("Trend", "Strong" if avg_score > 60 else "Medium" if avg_score > 40 else "Low")
+        # Smart Scoring
+        if results < 3500:
+            opp = 88
+            status = "🟢 Excellent Low Competition"
+        elif results < 7000:
+            opp = 72
+            status = "🟡 Good Opportunity"
+        elif results < 14000:
+            opp = 48
+            status = "🟠 Competitive"
+        else:
+            opp = 28
+            status = "🔴 High Competition"
 
-                    # Rest of the tool (competition, suggestions, etc.)
-                    st.subheader("Redbubble Competition")
-                    st.markdown(f"[Check on Redbubble](https://www.redbubble.com/shop/{keyword.replace(' ', '+')})")
-                    results = st.number_input("Paste number of results", min_value=0, value=8000, step=100)
+        st.metric("**Opportunity Score**", f"{opp}/100", status)
 
-                    score = 85 if results < 5000 else 65 if results < 10000 else 40
-                    if avg_score > 60: score += 15
-                    score = min(95, score)
+        # Strategy
+        st.subheader("🎯 Recommended Action Plan")
+        if opp >= 75:
+            st.success("**Strong Green Light** - Create 5-10 designs in this niche")
+        elif opp >= 55:
+            st.warning("**Worth Testing** - Focus on unique angles")
+        else:
+            st.error("**High Competition** - Only enter with very strong unique design")
 
-                    st.metric("Opportunity Score", f"{score}/100")
+        st.subheader("Best Design Styles for This Niche")
+        st.write("• Retro Vintage Style")
+        st.write("• Funny / Sarcastic")
+        st.write("• Minimal Aesthetic")
+        st.write("• Cute Kawaii")
+        st.write("• Dark Humor")
 
-                    st.subheader("Recommended Design Styles")
-                    st.write("- Retro Vintage")
-                    st.write("- Funny / Sarcastic")
-                    st.write("- Minimal Aesthetic")
-                    st.write("- Cute Kawaii")
+        st.subheader("Recommended Title Formula")
+        st.code(f"{keyword.title()} Gift | Funny Retro {keyword.title()} T-Shirt Sticker Hoodie")
 
-            except Exception as e:
-                st.error("⚠️ Could not connect to Google Trends.")
-                st.info("This usually happens due to temporary blocking. Please wait 1-2 minutes and try again.")
-                st.info("Tip: Use more general keywords like 'cat' instead of very specific ones.")
+        st.subheader("High-Performance Tags")
+        tags = [keyword.lower(), f"{keyword.lower()} gift", f"funny {keyword.lower()}", 
+                f"{keyword.lower()} vintage", f"{keyword.lower()} retro", f"{keyword.lower()} aesthetic"]
+        st.code("\n".join(tags))
 
     else:
         st.warning("Please enter a keyword")
 
-st.caption("Personal Tool | Try again if Trends fail")
+st.info("**Pro Tip**: Best results come from niches with **< 7000 results** + rising interest on BubbleTrends or Google Trends.")
+
+st.caption("Personal Research Tool | Updated for 2026")
