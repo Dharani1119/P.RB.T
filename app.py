@@ -1,94 +1,96 @@
 import streamlit as st
-import pandas as pd
-from datetime import datetime
 
 st.set_page_config(page_title="Redbubble Pro Hunter", layout="wide", page_icon="🔥")
 
-st.title("🔥 Redbubble Pro Hunter")
-st.markdown("**Rising Demand + Low Competition Research Tool**")
-st.caption("Best free accessible data sources for organic Redbubble success")
+st.title("🔥 Redbubble Pro Hunter v5")
+st.markdown("**Smart Niche Analyzer + Strategy Generator**")
+st.caption("Rising Demand • Low Competition • Ready-to-Upload Strategy")
 
-# ====================== USEFUL FREE TREND SOURCES ======================
-st.subheader("🔗 Best Free Redbubble Trend Sources (2026)")
-
-col1, col2 = st.columns(2)
-with col1:
-    st.markdown("""
-    **1. Bubble Trends**  
-    [→ Open BubbleTrends](https://www.thebubbletrends.com/)
-    
-    **2. BubbleSpider**  
-    [→ Popular Keywords](https://bubblespider.com/keyword-research/popular-keywords)
-    """)
-
-with col2:
-    st.markdown("""
-    **3. Top Bubble Index**  
-    [→ Check Index](https://www.topbubbleindex.com/)
-    
-    **4. Insight Factory**  
-    [→ Daily Trends](https://insightfactory.app/redbubble-trends/)
-    """)
+# ====================== GREEN LIGHT NICHES ======================
+st.subheader("🌟 Green Light Niches Right Now (Low Comp + Rising)")
+green_niches = ["Pickleball Grandma", "Emotional Support Demon", "Anxiety Cat", 
+                "Sarcastic Teacher", "Cottagecore Frog", "Booktok Grandma", "Golf Grandpa"]
+for niche in green_niches:
+    st.markdown(f"• **{niche}**")
 
 st.divider()
 
-# ====================== MAIN KEYWORD ANALYSIS ======================
-keyword = st.text_input("Enter your keyword or niche", 
-                       placeholder="e.g. pickleball grandma, anxiety cat, booktok girl")
+keyword = st.text_input("Enter your main keyword or niche", 
+                       placeholder="e.g. unicorn, pickleball grandma, anxiety cat")
 
-if st.button("🚀 Analyze This Niche", type="primary", use_container_width=True):
+if st.button("🚀 Deep Analyze & Generate Full Strategy", type="primary", use_container_width=True):
     if keyword:
-        st.success(f"**Analyzing: {keyword}**")
+        st.success(f"**Analyzing: {keyword.title()}**")
 
-        st.subheader("Step 1: Check Current Competition")
-        st.markdown(f"[🔗 Open Redbubble Search](https://www.redbubble.com/shop/{keyword.replace(' ', '+')})")
-        
-        results = st.number_input("Paste number of results from Redbubble", 
-                                min_value=0, value=8000, step=500, help="Look for 'X results' or 'of X designs'")
+        # Competition Input
+        st.subheader("Step 1: Redbubble Competition")
+        st.markdown(f"[🔗 Search on Redbubble](https://www.redbubble.com/shop/{keyword.replace(' ', '+')})")
+        results = st.number_input("Paste number of results", min_value=0, value=8000, step=500)
 
         # Smart Scoring
-        if results < 3500:
-            opp = 88
-            status = "🟢 Excellent Low Competition"
-        elif results < 7000:
-            opp = 72
-            status = "🟡 Good Opportunity"
-        elif results < 14000:
-            opp = 48
-            status = "🟠 Competitive"
-        else:
-            opp = 28
-            status = "🔴 High Competition"
+        demand = 65  # Default (you can adjust manually if you checked Trends)
+        competition_score = 90 if results < 3500 else 75 if results < 7000 else 50 if results < 14000 else 25
+        niche_score = int((demand * 0.5) + (competition_score * 0.5))
 
-        st.metric("**Opportunity Score**", f"{opp}/100", status)
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Niche Difficulty", f"{niche_score}/100")
+        with col2:
+            st.metric("Competition Level", f"{results:,} designs")
+        with col3:
+            if niche_score >= 78:
+                st.success("🟢 EXCELLENT")
+            elif niche_score >= 60:
+                st.warning("🟡 GOOD")
+            else:
+                st.error("🔴 TOUGH")
 
-        # Strategy
-        st.subheader("🎯 Recommended Action Plan")
-        if opp >= 75:
-            st.success("**Strong Green Light** - Create 5-10 designs in this niche")
-        elif opp >= 55:
-            st.warning("**Worth Testing** - Focus on unique angles")
-        else:
-            st.error("**High Competition** - Only enter with very strong unique design")
+        # ====================== 1. LONG-TAIL KEYWORDS ======================
+        st.subheader("🎯 High-Potential Long-Tail Keywords")
+        long_tails = [
+            f"{keyword} gift", f"funny {keyword}", f"{keyword} vintage", 
+            f"{keyword} retro", f"{keyword} aesthetic", f"{keyword} lover",
+            f"sarcastic {keyword}", f"cute {keyword}", f"mental health {keyword}",
+            f"{keyword} 2026"
+        ]
+        for lt in long_tails:
+            st.write(f"• **{lt}**")
 
-        st.subheader("Best Design Styles for This Niche")
-        st.write("• Retro Vintage Style")
-        st.write("• Funny / Sarcastic")
-        st.write("• Minimal Aesthetic")
-        st.write("• Cute Kawaii")
-        st.write("• Dark Humor")
+        # ====================== 2. DESIGN RECOMMENDATIONS ======================
+        st.subheader("🎨 Best Design Styles to Create")
+        designs = ["Retro Vintage", "Funny Sarcastic", "Minimal Aesthetic", 
+                  "Cute Kawaii", "Dark Humor", "Watercolor", "Typography"]
+        for d in designs:
+            st.write(f"• **{d}**")
 
-        st.subheader("Recommended Title Formula")
-        st.code(f"{keyword.title()} Gift | Funny Retro {keyword.title()} T-Shirt Sticker Hoodie")
+        # ====================== 3. PRODUCT RECOMMENDATION ======================
+        st.subheader("🛍️ Best Products to Upload First")
+        st.write("**Priority Order:**")
+        st.write("1. **Stickers** (Easiest to rank)")
+        st.write("2. **T-Shirts**")
+        st.write("3. **Hoodies**")
+        st.write("4. **Mugs**")
+        st.write("5. **Posters**")
 
-        st.subheader("High-Performance Tags")
+        # ====================== 4. TITLE & TAGS ======================
+        st.subheader("📝 Recommended Title")
+        st.code(f"{keyword.title()} Gift | Funny Retro Vintage {keyword.title()} T-Shirt Sticker")
+
+        st.subheader("🏷️ Best Tags (Copy & Paste)")
         tags = [keyword.lower(), f"{keyword.lower()} gift", f"funny {keyword.lower()}", 
-                f"{keyword.lower()} vintage", f"{keyword.lower()} retro", f"{keyword.lower()} aesthetic"]
+                f"{keyword.lower()} vintage", f"{keyword.lower()} retro", 
+                f"{keyword.lower()} aesthetic", f"{keyword.lower()} shirt"]
         st.code("\n".join(tags))
+
+        # Final Advice
+        if niche_score >= 75:
+            st.success("**GO FOR IT** - This niche has strong potential!")
+        elif niche_score >= 55:
+            st.warning("**Test it** with 3-5 designs first.")
+        else:
+            st.error("Consider more specific long-tail versions of this keyword.")
 
     else:
         st.warning("Please enter a keyword")
 
-st.info("**Pro Tip**: Best results come from niches with **< 7000 results** + rising interest on BubbleTrends or Google Trends.")
-
-st.caption("Personal Research Tool | Updated for 2026")
+st.caption("Personal Pro Tool | Designed for Organic Redbubble Success")
