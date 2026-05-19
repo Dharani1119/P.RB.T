@@ -1,95 +1,99 @@
 import streamlit as st
-import pandas as pd
-import time
-import re
 from pytrends.request import TrendReq
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
 
-st.set_page_config(page_title="Redbubble Hunter", layout="wide", page_icon="🔥")
+st.set_page_config(page_title="Redbubble Pro Hunter", layout="wide", page_icon="🔥")
 
-st.title("🔥 Redbubble Hunter")
-st.markdown("**Find Winning Niches for Redbubble (Organic Traffic Only)**")
-st.caption("Google Trends + Real Redbubble Competition Analysis")
+st.title("🔥 Redbubble Pro Hunter")
+st.markdown("**Best Version** — Rising Demand + Low Competition + Ready-to-Use Strategy")
+st.caption("Real data → Actionable strategy for organic sales")
 
-keyword = st.text_input("Enter your keyword or niche idea", 
-                       placeholder="e.g. pickleball grandma, cat astronaut, booktok girl, mental health nurse")
+# ====================== INPUT ======================
+keyword = st.text_input("Enter your main keyword or niche", 
+                       placeholder="e.g. pickleball grandma, anxiety cat, booktok girl, mental health nurse")
 
-col1, col2 = st.columns([3,1])
-with col1:
-    analyze_button = st.button("🚀 Analyze This Niche", type="primary", use_container_width=True)
+analyze = st.button("🚀 Deep Analyze & Generate Strategy", type="primary", use_container_width=True)
 
-if analyze_button and keyword:
-    with st.spinner("Fetching Google Trends + Scraping Redbubble..."):
+if analyze and keyword:
+    with st.spinner("Analyzing real trends & competition..."):
         try:
-            # Google Trends
             pytrends = TrendReq(hl='en-US', tz=360)
             pytrends.build_payload([keyword], cat=0, timeframe='today 12-m')
             interest = pytrends.interest_over_time()
             
-            avg_interest = int(interest[keyword].mean()) if not interest.empty else 0
-            trend_status = "Rising 🔥" if avg_interest > 60 else "Stable" if avg_interest > 35 else "Low"
+            avg_score = int(interest[keyword].mean()) if not interest.empty else 45
+            is_rising = interest[keyword].iloc[-3:].mean() > interest[keyword].iloc[:3].mean() if not interest.empty else False
 
-            # Redbubble Scrape
-            chrome_options = Options()
-            chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
-            
-            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-            search_url = f"https://www.redbubble.com/shop/{keyword.replace(' ', '+')}"
-            driver.get(search_url)
-            time.sleep(5)
-            
-            try:
-                results_text = driver.find_element("xpath", "//span[contains(text(), 'results')]").text
-                results_count = int(re.sub(r'[^0-9]', '', results_text))
-            except:
-                results_count = "N/A (Try again later)"
+            # Redbubble Input
+            st.subheader("Redbubble Competition")
+            st.markdown(f"[🔗 Check Live Results](https://www.redbubble.com/shop/{keyword.replace(' ', '+')})")
+            results_count = st.number_input("Paste number of results from Redbubble", 
+                                          min_value=0, value=6500, step=100)
 
-            driver.quit()
+            # Core Scoring
+            demand_score = avg_score
+            comp_score = 90 if results_count < 3500 else 75 if results_count < 7000 else 50 if results_count < 14000 else 25
+            niche_score = int((demand_score * 0.55) + (comp_score * 0.45))
 
-            # Opportunity Score
-            comp = results_count if isinstance(results_count, int) else 15000
-            opportunity_score = max(10, min(95, 100 - (comp // 120)))
-            if avg_interest > 65:
-                opportunity_score += 15
-            opportunity_score = min(98, opportunity_score)
-
-            # Verdict
-            if opportunity_score >= 75 and avg_interest >= 55:
-                verdict = "🟢 EXCELLENT Organic Chance"
-            elif opportunity_score >= 55 and avg_interest >= 45:
-                verdict = "🟡 Good Chance"
+            # Final Verdict
+            if niche_score >= 78 and is_rising:
+                verdict = "🟢 EXCELLENT - Strong Organic Potential"
+            elif niche_score >= 65:
+                verdict = "🟡 GOOD - Worth Creating Multiple Designs"
+            elif niche_score >= 50:
+                verdict = "🟠 Average - Needs Strong Design"
             else:
-                verdict = "🔴 High Competition - Tough"
+                verdict = "🔴 Difficult - High Competition"
 
-            # Results
-            c1, c2, c3 = st.columns(3)
-            with c1:
-                st.metric("Google Trends Score", f"{avg_interest}/100", trend_status)
-            with c2:
-                st.metric("Redbubble Designs", f"{results_count:,}" if isinstance(results_count, int) else results_count)
-            with c3:
-                st.metric("Opportunity Score", f"{opportunity_score}/100", verdict)
+            # Display Scores
+            c1, c2, c3, c4 = st.columns(4)
+            with c1: st.metric("Demand (Trends)", f"{demand_score}/100", "Rising" if is_rising else "")
+            with c2: st.metric("Competition", f"{results_count:,} designs")
+            with c3: st.metric("Niche Score", f"{niche_score}/100")
+            with c4: st.metric("Recommendation", verdict.split(" - ")[0])
 
             st.success(verdict)
 
-            # Recommended Tags
-            st.subheader("Recommended Long-Tail Tags (Copy-Paste)")
-            base_tags = [keyword, f"{keyword} gift", f"{keyword} vintage", f"{keyword} aesthetic", 
-                        f"{keyword} retro", f"{keyword} funny", f"{keyword} cute", f"{keyword} 2026"]
-            st.code("\n".join(base_tags), language=None)
+            # ====================== LONG-TAIL KEYWORDS ======================
+            st.subheader("🎯 High-Potential Long-Tail Keywords")
+            long_tails = [
+                f"{keyword} gift", f"funny {keyword}", f"{keyword} vintage", 
+                f"{keyword} retro", f"{keyword} aesthetic", f"{keyword} lover",
+                f"{keyword} 2026", f"sarcastic {keyword}", f"cute {keyword}"
+            ]
+            for lt in long_tails:
+                st.write(f"• **{lt}**")
 
-            st.info("**Pro Tip**: Best niches usually have < 8,000 results + Trends score > 55")
+            # ====================== PRODUCT RECOMMENDATION ======================
+            st.subheader("🛍️ Best Products to Upload First")
+            st.write("**Priority Order:**")
+            products = ["Sticker", "T-Shirt", "Hoodie", "Mug", "Poster", "Phone Case"]
+            for i, p in enumerate(products, 1):
+                st.write(f"{i}. **{p}**")
 
-        except Exception as e:
-            st.error(f"Error: {str(e)}")
-            st.info("Sometimes Redbubble blocks scraping. Try again in a few minutes.")
+            # ====================== DESIGN IDEAS ======================
+            st.subheader("🎨 Best Design Styles to Create")
+            designs = ["Retro Vintage", "Funny Sarcastic", "Minimal Aesthetic", 
+                      "Kawaii/Cute", "Dark Humor", "Watercolor", "Typography Quote"]
+            for d in designs:
+                st.write(f"• **{d}** version of **{keyword}**")
+
+            # ====================== TITLE & DESCRIPTION ======================
+            st.subheader("📝 Ready-to-Use Title Formula")
+            st.code(f"{keyword.title()} Gift | Funny Retro Vintage {keyword.title()} T-Shirt Sticker")
+
+            st.subheader("Best Tags (Copy & Paste)")
+            tags = [keyword.lower(), f"{keyword.lower()} gift", f"funny {keyword.lower()}", 
+                   f"{keyword.lower()} vintage", f"{keyword.lower()} retro", f"{keyword.lower()} aesthetic",
+                   f"{keyword.lower()} shirt", f"{keyword.lower()} sticker"]
+            st.code("\n".join(tags))
+
+            st.info("**Pro Tip**: Use 2-3 long-tail keywords in title + 10-15 good tags = Best chance for organic traffic.")
+
+        except:
+            st.error("Could not fetch trends. Please try again later.")
 
 else:
-    st.info("Enter a keyword above and click Analyze")
+    st.info("Enter a keyword and click **Deep Analyze** to get full strategy.")
 
-st.caption("Personal Tool • Free for your use only")
+st.caption("Personal Pro Tool | Data-Driven | Focused on Organic Sales")
