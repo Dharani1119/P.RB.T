@@ -2,95 +2,71 @@ import streamlit as st
 
 st.set_page_config(page_title="Redbubble Pro Hunter", layout="wide", page_icon="🔥")
 
-st.title("🔥 Redbubble Pro Hunter v5")
-st.markdown("**Smart Niche Analyzer + Strategy Generator**")
-st.caption("Rising Demand • Low Competition • Ready-to-Upload Strategy")
-
-# ====================== GREEN LIGHT NICHES ======================
-st.subheader("🌟 Green Light Niches Right Now (Low Comp + Rising)")
-green_niches = ["Pickleball Grandma", "Emotional Support Demon", "Anxiety Cat", 
-                "Sarcastic Teacher", "Cottagecore Frog", "Booktok Grandma", "Golf Grandpa"]
-for niche in green_niches:
-    st.markdown(f"• **{niche}**")
-
-st.divider()
+st.title("🔥 Redbubble Pro Hunter")
+st.markdown("**Real & Effective Niche Research Tool**")
+st.caption("Updated - Now Properly Calculates Based on Your Input")
 
 keyword = st.text_input("Enter your main keyword or niche", 
-                       placeholder="e.g. unicorn, pickleball grandma, anxiety cat")
+                       placeholder="e.g. pickleball grandma, anxiety cat, booktok girl")
 
-if st.button("🚀 Deep Analyze & Generate Full Strategy", type="primary", use_container_width=True):
+if st.button("🚀 Analyze This Niche", type="primary", use_container_width=True):
     if keyword:
         st.success(f"**Analyzing: {keyword.title()}**")
 
-        # Competition Input
-        st.subheader("Step 1: Redbubble Competition")
-        st.markdown(f"[🔗 Search on Redbubble](https://www.redbubble.com/shop/{keyword.replace(' ', '+')})")
-        results = st.number_input("Paste number of results", min_value=0, value=8000, step=500)
+        st.subheader("Redbubble Competition")
+        st.markdown(f"[🔗 Open Redbubble Search](https://www.redbubble.com/shop/{keyword.replace(' ', '+')})")
+        
+        results = st.number_input("Enter number of results from Redbubble", 
+                                min_value=0, value=8000, step=100, 
+                                help="Example: 12456 or 6750")
 
-        # Smart Scoring
-        demand = 65  # Default (you can adjust manually if you checked Trends)
-        competition_score = 90 if results < 3500 else 75 if results < 7000 else 50 if results < 14000 else 25
-        niche_score = int((demand * 0.5) + (competition_score * 0.5))
+        # === FIXED SCORING LOGIC ===
+        if results < 3000:
+            score = 90
+            rating = "🟢 Excellent Opportunity"
+        elif results < 6000:
+            score = 78
+            rating = "🟢 Very Good"
+        elif results < 10000:
+            score = 62
+            rating = "🟡 Good"
+        elif results < 20000:
+            score = 45
+            rating = "🟠 Competitive"
+        else:
+            score = 28
+            rating = "🔴 Very Tough"
 
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Niche Difficulty", f"{niche_score}/100")
-        with col2:
-            st.metric("Competition Level", f"{results:,} designs")
-        with col3:
-            if niche_score >= 78:
-                st.success("🟢 EXCELLENT")
-            elif niche_score >= 60:
-                st.warning("🟡 GOOD")
-            else:
-                st.error("🔴 TOUGH")
+        st.metric("**Opportunity Score**", f"{score}/100", rating)
 
-        # ====================== 1. LONG-TAIL KEYWORDS ======================
-        st.subheader("🎯 High-Potential Long-Tail Keywords")
+        # Long-tail & Strategy
+        st.subheader("Smart Long-Tail Keywords")
         long_tails = [
-            f"{keyword} gift", f"funny {keyword}", f"{keyword} vintage", 
-            f"{keyword} retro", f"{keyword} aesthetic", f"{keyword} lover",
-            f"sarcastic {keyword}", f"cute {keyword}", f"mental health {keyword}",
-            f"{keyword} 2026"
+            f"{keyword} gift", f"funny {keyword}", f"retro {keyword}", 
+            f"vintage {keyword}", f"sarcastic {keyword}", f"cute {keyword}",
+            f"{keyword} for women", f"{keyword} for men"
         ]
         for lt in long_tails:
             st.write(f"• **{lt}**")
 
-        # ====================== 2. DESIGN RECOMMENDATIONS ======================
-        st.subheader("🎨 Best Design Styles to Create")
-        designs = ["Retro Vintage", "Funny Sarcastic", "Minimal Aesthetic", 
-                  "Cute Kawaii", "Dark Humor", "Watercolor", "Typography"]
-        for d in designs:
-            st.write(f"• **{d}**")
-
-        # ====================== 3. PRODUCT RECOMMENDATION ======================
-        st.subheader("🛍️ Best Products to Upload First")
-        st.write("**Priority Order:**")
-        st.write("1. **Stickers** (Easiest to rank)")
-        st.write("2. **T-Shirts**")
-        st.write("3. **Hoodies**")
-        st.write("4. **Mugs**")
-        st.write("5. **Posters**")
-
-        # ====================== 4. TITLE & TAGS ======================
-        st.subheader("📝 Recommended Title")
-        st.code(f"{keyword.title()} Gift | Funny Retro Vintage {keyword.title()} T-Shirt Sticker")
-
-        st.subheader("🏷️ Best Tags (Copy & Paste)")
-        tags = [keyword.lower(), f"{keyword.lower()} gift", f"funny {keyword.lower()}", 
-                f"{keyword.lower()} vintage", f"{keyword.lower()} retro", 
-                f"{keyword.lower()} aesthetic", f"{keyword.lower()} shirt"]
-        st.code("\n".join(tags))
-
-        # Final Advice
-        if niche_score >= 75:
-            st.success("**GO FOR IT** - This niche has strong potential!")
-        elif niche_score >= 55:
-            st.warning("**Test it** with 3-5 designs first.")
+        st.subheader("Recommended Strategy")
+        if score >= 75:
+            st.success("**Strong Green Light** - Create multiple designs")
+        elif score >= 60:
+            st.warning("**Good Chance** - Worth testing")
         else:
-            st.error("Consider more specific long-tail versions of this keyword.")
+            st.error("High competition. Use more specific long-tail versions.")
+
+        st.subheader("Best Title Formula")
+        st.code(f"Funny Retro {keyword.title()} Gift | Vintage {keyword.title()} T-Shirt Sticker")
+
+        st.subheader("Best Tags")
+        tags = [keyword.lower(), f"funny {keyword.lower()}", f"{keyword.lower()} gift", 
+                f"retro {keyword.lower()}", f"vintage {keyword.lower()}", f"{keyword.lower()} shirt"]
+        st.code("\n".join(tags))
 
     else:
         st.warning("Please enter a keyword")
 
-st.caption("Personal Pro Tool | Designed for Organic Redbubble Success")
+st.info("Tip: Lower the number = Higher opportunity score. Try keywords with under 7000 results for best chance.")
+st.caption("Fixed Version | Score now updates based on your input")
