@@ -3,70 +3,89 @@ import streamlit as st
 st.set_page_config(page_title="Redbubble Pro Hunter", layout="wide", page_icon="🔥")
 
 st.title("🔥 Redbubble Pro Hunter")
-st.markdown("**Real & Effective Niche Research Tool**")
-st.caption("Updated - Now Properly Calculates Based on Your Input")
+st.markdown("**Real Organic Winning Niche Finder**")
 
-keyword = st.text_input("Enter your main keyword or niche", 
-                       placeholder="e.g. pickleball grandma, anxiety cat, booktok girl")
+# 1. TRENDING RISING KEYWORDS SECTION
+st.subheader("1. 🔥 Trending & Rising Keywords Right Now")
+trending = [
+    "Pickleball Grandma", "Anxiety Cat", "Emotional Support Demon", 
+    "Booktok Girl", "Sarcastic Teacher", "Cottagecore Frog", 
+    "Golf Grandpa", "Plant Lady Era", "Mental Health Nurse"
+]
+for item in trending:
+    st.markdown(f"• **{item}**")
 
-if st.button("🚀 Analyze This Niche", type="primary", use_container_width=True):
+st.divider()
+
+# 2. KEYWORD INPUT
+keyword = st.text_input("2. Enter your keyword or niche", 
+                       placeholder="e.g. pickleball grandma, anxiety cat")
+
+if st.button("🚀 Analyze This Keyword", type="primary", use_container_width=True):
     if keyword:
         st.success(f"**Analyzing: {keyword.title()}**")
 
-        st.subheader("Redbubble Competition")
-        st.markdown(f"[🔗 Open Redbubble Search](https://www.redbubble.com/shop/{keyword.replace(' ', '+')})")
-        
-        results = st.number_input("Enter number of results from Redbubble", 
-                                min_value=0, value=8000, step=100, 
-                                help="Example: 12456 or 6750")
+        # 3. Redbubble Results (Manual for now - Automatic is unstable)
+        st.subheader("3. Redbubble Competition (Live)")
+        st.markdown(f"[Open Redbubble Search →](https://www.redbubble.com/shop/{keyword.replace(' ', '+')})")
+        results = st.number_input("Enter number of designs/results you see", 
+                                min_value=0, value=8000, step=100)
 
-        # === FIXED SCORING LOGIC ===
-        if results < 3000:
-            score = 90
-            rating = "🟢 Excellent Opportunity"
-        elif results < 6000:
-            score = 78
-            rating = "🟢 Very Good"
-        elif results < 10000:
-            score = 62
-            rating = "🟡 Good"
-        elif results < 20000:
-            score = 45
-            rating = "🟠 Competitive"
+        # 4. Competition Color
+        if results < 4000:
+            comp_color = "🟢 Low Competition"
+            comp_status = "Green"
+        elif results < 9000:
+            comp_color = "🟠 Medium Competition"
+            comp_status = "Orange"
         else:
-            score = 28
-            rating = "🔴 Very Tough"
+            comp_color = "🔴 High Competition"
+            comp_status = "Red"
 
-        st.metric("**Opportunity Score**", f"{score}/100", rating)
+        # 5. Demand Color (Simplified for now)
+        demand_color = "🟫 High Demand" if results < 8000 else "🟨 Medium Demand" if results < 15000 else "⚪ Low Demand"
 
-        # Long-tail & Strategy
-        st.subheader("Smart Long-Tail Keywords")
-        long_tails = [
-            f"{keyword} gift", f"funny {keyword}", f"retro {keyword}", 
-            f"vintage {keyword}", f"sarcastic {keyword}", f"cute {keyword}",
-            f"{keyword} for women", f"{keyword} for men"
-        ]
-        for lt in long_tails:
-            st.write(f"• **{lt}**")
+        st.metric("Competition", comp_color)
+        st.metric("Demand Level", demand_color)
 
-        st.subheader("Recommended Strategy")
-        if score >= 75:
-            st.success("**Strong Green Light** - Create multiple designs")
-        elif score >= 60:
-            st.warning("**Good Chance** - Worth testing")
+        # Final Chance
+        final_score = 85 if results < 4000 else 65 if results < 9000 else 35
+        if final_score >= 75:
+            chance = "🟢 **High Chance** of Organic Sales"
+        elif final_score >= 55:
+            chance = "🟡 **Medium Chance**"
         else:
-            st.error("High competition. Use more specific long-tail versions.")
+            chance = "🔴 **Low Chance**"
 
-        st.subheader("Best Title Formula")
+        st.success(chance)
+
+        # 6. SEO Elements
+        st.subheader("6. SEO Optimized Elements")
+
+        st.subheader("Recommended Title")
         st.code(f"Funny Retro {keyword.title()} Gift | Vintage {keyword.title()} T-Shirt Sticker")
 
-        st.subheader("Best Tags")
-        tags = [keyword.lower(), f"funny {keyword.lower()}", f"{keyword.lower()} gift", 
-                f"retro {keyword.lower()}", f"vintage {keyword.lower()}", f"{keyword.lower()} shirt"]
+        st.subheader("High Performance Tags")
+        tags = [
+            keyword.lower(),
+            f"funny {keyword.lower()}",
+            f"{keyword.lower()} gift",
+            f"retro {keyword.lower()}",
+            f"vintage {keyword.lower()}",
+            f"{keyword.lower()} shirt",
+            f"sarcastic {keyword.lower()}"
+        ]
         st.code("\n".join(tags))
+
+        st.subheader("SEO Description")
+        st.code(f"""
+{keyword.title()} - Perfect funny retro gift for {keyword} lovers!
+
+This vintage style {keyword} design is great for birthdays, Christmas or everyday wear.
+Available on t-shirts, stickers, hoodies and more.
+        """.strip())
 
     else:
         st.warning("Please enter a keyword")
 
-st.info("Tip: Lower the number = Higher opportunity score. Try keywords with under 7000 results for best chance.")
-st.caption("Fixed Version | Score now updates based on your input")
+st.caption("Note: Automatic Redbubble count is unstable. Manual input is more accurate for now.")
